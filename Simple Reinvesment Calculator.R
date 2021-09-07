@@ -36,7 +36,6 @@ ui <- fluidPage(
 server <- function(input, output) {
     output$NewStock <-renderText({
         dy <- input$dividend
-        price <- input$price
         p <- 100 
         fq <- as.numeric(input$paymentTime)
         currentPrice <- input$price
@@ -48,14 +47,14 @@ server <- function(input, output) {
     #code 
     output$Amount <-renderText({
         dy <- input$dividend
-        price <- input$price
         p <- 100 
         fq <- as.numeric(input$paymentTime)
         currentPrice <- input$price
         initStock <- input$currentHold 
         amountPerFq <- 1/fq * dy/100 * currentPrice
-        Need <- round((currentPrice/amountPerFq) + 2,2)
-        paste0("$",price * Need)
+        Need <- floor((currentPrice/amountPerFq)-initStock + 2)
+        total <- Need * currentPrice
+        paste0("$",total)
     })
 }
 

@@ -6,7 +6,9 @@ ui <- fluidPage(
     
     # Application title
     titlePanel("Dividend Reinvestment Calculator"),
-    
+    h6("Note: the amount specified adds 2 additional stocks to maintain DRIP. 
+           Happy investing!", align="left"),
+    br(),
     sidebarPanel(
         numericInput("price",h4("What is the current stock price?",align="center"),
                      value=100),
@@ -22,7 +24,7 @@ ui <- fluidPage(
     mainPanel(
         h2("The number of stocks required for purchase is",align="center"),
         tags$span(h2(textOutput("NewStock"),align="center"),style="color:blue"),
-
+        
         h2("The amount of cash needed to purchase is",align="center"),
         tags$span(h2(textOutput("Amount"),align="center"),style="color:blue"),
         
@@ -36,7 +38,7 @@ server <- function(input, output) {
         div <- input$dividend/100
         f <- as.numeric(input$paymentTime)
         initial <- input$currentHold 
-        Need <- floor((1/div*f)) - initial
+        Need <- abs(floor((1/div*f)) - initial) + 2
         paste(Need," stocks") 
     })
     #code 
@@ -44,7 +46,7 @@ server <- function(input, output) {
         div <- input$dividend/100
         f <- as.numeric(input$paymentTime)
         initial <- input$currentHold 
-        Need <- floor((1/div*f)) - initial
+        Need <- abs(floor((1/div*f)) - initial) + 2
         paste0("$",input$price * Need)
     })
 }

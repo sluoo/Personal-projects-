@@ -12,22 +12,22 @@ ui <- fluidPage(
     sidebarPanel(
         numericInput("price",h4("What is the current stock price?",align="center"),
                      value=100),
-        numericInput("currentHold",h4("How many stocks do you have? If none,enter 0.",
+        numericInput("currentHold",h4("How many stocks do you have? If none, enter 0.",
                                       align="center"),value=0),
         numericInput("dividend",h4("What is the current dividend yield?",align="center"),
                      value=1.23),
         selectInput("paymentTime",h4("How frequent is the dividend paid?",align="center"),
-                    choices = c("Quarter"=0.25,"Monthly"=0.0833,"Bi-Yearly"=1/2,"Yearly"=1),
+                    choices = c("Quarter"=4,"Monthly"=12,"Bi-Yearly"=2,"Yearly"=1),
                     selected = "Quarter")
-    
-        ),
+        
+    ),
     mainPanel(
-        h2("The number of stocks required for purchase is",align="center"),
+        h2("Given the current number of shares you have, the number of stocks required for DRIP is",align="center"),
         tags$span(h2(textOutput("NewStock"),align="center"),style="color:blue"),
         
-        h2("The amount of cash needed to purchase is",align="center"),
+        h2("The amount of cash needed to purchase at the current share price is",align="center"),
         tags$span(h2(textOutput("Amount"),align="center"),style="color:blue"),
-        
+    
     )
 )
 
@@ -35,19 +35,27 @@ ui <- fluidPage(
 # Backend
 server <- function(input, output) {
     output$NewStock <-renderText({
-        div <- input$dividend/100
-        f <- as.numeric(input$paymentTime)
-        initial <- input$currentHold 
-        Need <- abs(floor((1/div*f)) - initial) + 2
+        dy <- input$dividend
+        price <- input$price
+        p <- 100 
+        fq <- as.numeric(input$paymentTime)
+        currentPrice <- input$price
+        initStock <- input$currentHold 
+        amountPerFq <- 1/fq * dy/100 * currentPrice
+        Need <- floor((currentPrice/amountPerFq)-initStock + 2)
         paste(Need," stocks") 
     })
     #code 
     output$Amount <-renderText({
-        div <- input$dividend/100
-        f <- as.numeric(input$paymentTime)
-        initial <- input$currentHold 
-        Need <- abs(floor((1/div*f)) - initial) + 2
-        paste0("$",input$price * Need)
+        dy <- input$dividend
+        price <- input$price
+        p <- 100 
+        fq <- as.numeric(input$paymentTime)
+        currentPrice <- input$price
+        initStock <- input$currentHold 
+        amountPerFq <- 1/fq * dy/100 * currentPrice
+        Need <- round((currentPrice/amountPerFq) + 2,2)
+        paste0("$",price * Need)
     })
 }
 
